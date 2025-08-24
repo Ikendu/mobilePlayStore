@@ -62,7 +62,7 @@ fun PlayStoreLanding(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 60.dp, end = 20.dp),
+                .padding(bottom = 30.dp, end = 20.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
             Icon(
@@ -70,7 +70,7 @@ fun PlayStoreLanding(navController: NavHostController) {
                 contentDescription = "Search",
                 tint = Color.Transparent,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(100.dp)
                     .clickable { navController.navigate("secondpage") }
             )
         }
