@@ -62,7 +62,7 @@ fun PlayStoreLanding(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 30.dp, end = 20.dp),
+                .padding(bottom = 20.dp, end = 20.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
             Icon(
@@ -70,7 +70,7 @@ fun PlayStoreLanding(navController: NavHostController) {
                 contentDescription = "Search",
                 tint = Color.Transparent,
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(50.dp)
                     .clickable { navController.navigate("secondpage") }
             )
         }
@@ -91,7 +91,7 @@ fun SecondPage(navController: NavHostController) {
         Image(
             painter = painterResource(id = R.drawable.secondimage),
             contentDescription = "Search Page",
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(top = 10.dp),
             contentScale = ContentScale.Crop
         )
 
@@ -104,14 +104,14 @@ fun SecondPage(navController: NavHostController) {
                     .fillMaxWidth()
                     .background(Color.Transparent)
                     .height(64.dp) // doubled height
-                    .padding(top = 30.dp),
+                    .padding(bottom = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
                     tint = Color.Transparent,
-                    modifier = Modifier.size(35.dp)
+                    modifier = Modifier.size(50.dp)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -119,7 +119,7 @@ fun SecondPage(navController: NavHostController) {
                 BasicTextField(
                     value = query,
                     onValueChange = { query = it },
-                    textStyle = TextStyle(fontSize = 28.sp, color = Color.DarkGray),
+                    textStyle = TextStyle(fontSize = 20.sp, color = Color.DarkGray),
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
@@ -163,7 +163,7 @@ fun SecondPage(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 60.dp),
+                .padding(bottom = 30.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             Icon(
@@ -171,7 +171,7 @@ fun SecondPage(navController: NavHostController) {
                 contentDescription = "Back to Landing",
                 tint = Color.Transparent,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(50.dp)
                     .clickable { navController.navigate("landing") }
 
             )
