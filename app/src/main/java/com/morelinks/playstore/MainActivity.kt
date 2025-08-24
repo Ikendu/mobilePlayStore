@@ -104,7 +104,7 @@ fun SecondPage(navController: NavHostController) {
                     .fillMaxWidth()
                     .background(Color.Transparent)
                     .height(64.dp) // doubled height
-                    .padding(top = 25.dp),
+                    .padding(top = 30.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -119,7 +119,7 @@ fun SecondPage(navController: NavHostController) {
                 BasicTextField(
                     value = query,
                     onValueChange = { query = it },
-                    textStyle = TextStyle(fontSize = 22.sp, color = Color.DarkGray),
+                    textStyle = TextStyle(fontSize = 28.sp, color = Color.DarkGray),
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
