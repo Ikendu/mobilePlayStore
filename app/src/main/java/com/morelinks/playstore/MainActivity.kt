@@ -103,8 +103,8 @@ fun SecondPage(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent)
-                    .height(64.dp) // doubled height
-                    .padding(bottom = 20.dp),
+                    .height(64.dp), // doubled height
+//                    .padding(bottom = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
