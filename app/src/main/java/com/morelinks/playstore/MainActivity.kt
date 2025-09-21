@@ -62,7 +62,7 @@ fun PlayStoreLanding(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 20.dp, end = 20.dp),
+                .padding(bottom = 40.dp, end = 20.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
             Icon(
@@ -70,7 +70,7 @@ fun PlayStoreLanding(navController: NavHostController) {
                 contentDescription = "Search",
                 tint = Color.Transparent,
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(70.dp)
                     .clickable { navController.navigate("secondpage") }
             )
         }
@@ -103,8 +103,8 @@ fun SecondPage(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent)
-                    .height(64.dp), // doubled height
-//                    .padding(bottom = 20.dp),
+                    .height(70.dp) // doubled height
+                    .padding(top = 35.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -119,7 +119,7 @@ fun SecondPage(navController: NavHostController) {
                 BasicTextField(
                     value = query,
                     onValueChange = { query = it },
-                    textStyle = TextStyle(fontSize = 20.sp, color = Color.DarkGray),
+                    textStyle = TextStyle(fontSize = 30.sp, color = Color.DarkGray),
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(0.6f)
@@ -127,11 +127,11 @@ fun SecondPage(navController: NavHostController) {
                             if (query.isEmpty()) Color.Transparent else Color(0xFFecefec)
                         )
 //                        .padding(10.dp)
-                        .height(35.dp),
+                        .height(40.dp),
 
                     decorationBox = { innerTextField ->
                         if (query.isEmpty()) {
-                            Text("", color = Color.Gray, fontSize = 18.sp)
+                            Text("", color = Color.Gray, fontSize = 25.sp)
                         }
                         innerTextField()
                     }
@@ -154,7 +154,7 @@ fun SecondPage(navController: NavHostController) {
                         .background(Color.White.copy(alpha = 0.9f))
                         .padding(16.dp)
                 ) {
-                    Text(filteredApp.name, fontSize = 18.sp, color = Color.Black)
+                    Text(filteredApp.name, fontSize = 25.sp, color = Color.Black)
                 }
             }
         }
@@ -171,7 +171,7 @@ fun SecondPage(navController: NavHostController) {
                 contentDescription = "Back to Landing",
                 tint = Color.Transparent,
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(70.dp)
                     .clickable { navController.navigate("landing") }
 
             )
