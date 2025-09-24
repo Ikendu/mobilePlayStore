@@ -1,6 +1,7 @@
 package com.morelinks.playstore
 
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,9 +29,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.viewinterop.AndroidView
 import com.morelinks.playstore.ui.theme.PlayStoreTheme
 
-data class InstalledApp(val name: String, val packageName: String)
+// Installed app data class with icon
+data class InstalledApp(
+    val name: String,
+    val packageName: String,
+    val icon: Drawable
+)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +65,7 @@ fun PlayStoreLanding(navController: NavHostController) {
             contentScale = ContentScale.Crop
         )
 
-        // Search icon bottom right
+        // Search icon (invisible but clickable)
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,7 +75,7 @@ fun PlayStoreLanding(navController: NavHostController) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = Color.Transparent,
+                tint = Color.Transparent, // fully invisible
                 modifier = Modifier
                     .size(70.dp)
                     .clickable { navController.navigate("secondpage") }
@@ -82,7 +89,7 @@ fun SecondPage(navController: NavHostController) {
     val context = LocalContext.current
     var query by remember { mutableStateOf("") }
     val allApps = remember { getInstalledApps(context.packageManager) }
-    val filteredApp = allApps.firstOrNull {
+    val filteredApps = allApps.filter {
         it.name.contains(query, ignoreCase = true)
     }
 
@@ -91,75 +98,80 @@ fun SecondPage(navController: NavHostController) {
         Image(
             painter = painterResource(id = R.drawable.secondimage),
             contentDescription = "Search Page",
-            modifier = Modifier.fillMaxSize().padding(top = 10.dp),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Transparent Search Bar at top with double height
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Search bar row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Transparent)
-                    .height(70.dp) // doubled height
-                    .padding(top = 35.dp),
+                    .height(70.dp)
+                    .padding(top = 35.dp, start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Left search icon (invisible but clickable)
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
                     tint = Color.Transparent,
-                    modifier = Modifier.size(50.dp)
+                    modifier = Modifier.size(40.dp)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
+                // Input without placeholder or background
                 BasicTextField(
                     value = query,
                     onValueChange = { query = it },
-                    textStyle = TextStyle(fontSize = 30.sp, color = Color.DarkGray),
+                    textStyle = TextStyle(fontSize = 22.sp, color = Color.Black),
                     singleLine = true,
                     modifier = Modifier
-                        .fillMaxWidth(0.6f)
-                        .background(
-                            if (query.isEmpty()) Color.Transparent else Color(0xFFecefec)
-                        )
-//                        .padding(10.dp)
-                        .height(40.dp),
-
-                    decorationBox = { innerTextField ->
-                        if (query.isEmpty()) {
-                            Text("", color = Color.Gray, fontSize = 25.sp)
-                        }
-                        innerTextField()
-                    }
+                        .fillMaxWidth()
+                        .height(50.dp)
                 )
-
             }
 
-            // Show result if found
-            if (query.isNotEmpty() && filteredApp != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            val launchIntent =
-                                context.packageManager.getLaunchIntentForPackage(filteredApp.packageName)
-                            if (launchIntent != null) {
-                                context.startActivity(launchIntent)
-                            }
+            // Show multiple results (with real icons)
+            if (query.isNotEmpty() && filteredApps.isNotEmpty()) {
+                Column {
+                    filteredApps.forEach { app ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    val launchIntent =
+                                        context.packageManager.getLaunchIntentForPackage(app.packageName)
+                                    if (launchIntent != null) {
+                                        context.startActivity(launchIntent)
+                                    }
+                                }
+                                .background(Color.White.copy(alpha = 0.8f))
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // App icon from PackageManager
+                            AndroidView(
+                                factory = { ctx ->
+                                    android.widget.ImageView(ctx).apply {
+                                        setImageDrawable(app.icon)
+                                    }
+                                },
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .padding(end = 12.dp)
+                            )
+
+                            // App name
+                            Text(app.name, fontSize = 20.sp, color = Color.Black)
                         }
-                        .background(Color.White.copy(alpha = 0.9f))
-                        .padding(16.dp)
-                ) {
-                    Text(filteredApp.name, fontSize = 25.sp, color = Color.Black)
+                    }
                 }
             }
         }
 
-        // Back icon bottom center
+        // Back icon (invisible but clickable)
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -169,11 +181,10 @@ fun SecondPage(navController: NavHostController) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back to Landing",
-                tint = Color.Transparent,
+                tint = Color.Transparent, // invisible
                 modifier = Modifier
                     .size(70.dp)
                     .clickable { navController.navigate("landing") }
-
             )
         }
     }
@@ -185,7 +196,8 @@ fun getInstalledApps(pm: PackageManager): List<InstalledApp> {
         .map { app ->
             InstalledApp(
                 name = pm.getApplicationLabel(app).toString(),
-                packageName = app.packageName
+                packageName = app.packageName,
+                icon = pm.getApplicationIcon(app)
             )
         }
         .sortedBy { it.name.lowercase() }
