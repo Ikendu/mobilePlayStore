@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -77,7 +78,7 @@ fun PlayStoreLanding(navController: NavHostController) {
                 contentDescription = "Search",
                 tint = Color.Transparent, // fully invisible
                 modifier = Modifier
-                    .size(70.dp)
+                    .size(60.dp)
                     .clickable { navController.navigate("secondpage") }
             )
         }
@@ -107,8 +108,8 @@ fun SecondPage(navController: NavHostController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(70.dp)
-                    .padding(top = 35.dp, start = 10.dp, end = 10.dp),
+                    .height(55.dp)
+                    .padding(top = 17.dp, start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Left search icon (invisible but clickable)
@@ -121,16 +122,29 @@ fun SecondPage(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Input without placeholder or background
+                // Input styled like Play Store
                 BasicTextField(
                     value = query,
                     onValueChange = { query = it },
-                    textStyle = TextStyle(fontSize = 22.sp, color = Color.Black),
+                    textStyle = TextStyle(fontSize = 20.sp, color = Color.Black), // larger text
                     singleLine = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
+                    modifier = Modifier.fillMaxWidth(0.65f) // 65% width
+                        .height(45.dp)       // fixed height
+                        .background(
+                            Color(0xFFF1F3F4), // Play Store-like background
+                            shape = RoundedCornerShape(15.dp)
+                        )
+                        .padding(horizontal = 10.dp), // even padding inside
+                    decorationBox = { innerTextField ->
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.CenterStart // text vertically centered
+                        ) {
+                            innerTextField()
+                        }
+                    }
                 )
+
             }
 
             // Show multiple results (with real icons)
