@@ -37,6 +37,13 @@ android {
     buildFeatures {
         compose = true
     }
+    applicationVariants.all {
+        outputs.all {
+            val buildTypeName = name // debug or release
+            (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
+                "PlayStore.apk"
+        }
+    }
 }
 
 dependencies {
