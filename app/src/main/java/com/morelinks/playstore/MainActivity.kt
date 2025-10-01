@@ -118,7 +118,7 @@ fun SecondPage(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(70.dp)
-                    .padding(top = 35.dp, start = 10.dp, end = 10.dp),
+                    .padding(top = 27.dp, start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Left search icon (invisible but clickable)
@@ -135,7 +135,7 @@ fun SecondPage(navController: NavHostController) {
                 BasicTextField(
                     value = query,
                     onValueChange = { query = it },
-                    textStyle = TextStyle(fontSize = 27.sp, color = Color.Black),
+                    textStyle = TextStyle(fontSize = 24.sp, color = Color.Black),
                     singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth(0.65f) // 65% width
@@ -209,25 +209,31 @@ fun ThirdPage(navController: NavHostController, packageName: String) {
             contentScale = ContentScale.Crop
         )
 
-        // Open button at top right
+        // Transparent clickable area (190.dp from top, 40% width)
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 40.dp, end = 20.dp),
+                .padding(top = 190.dp, end = 20.dp),
             contentAlignment = Alignment.TopEnd
         ) {
-            Button(onClick = {
-                val launchIntent =
-                    context.packageManager.getLaunchIntentForPackage(packageName)
-                if (launchIntent != null) {
-                    context.startActivity(launchIntent)
-                }
-            }) {
-                Text("Open")
-            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)  // 40% width
+                    .height(50.dp)       // give it some tap area height
+                    .background(Color.Transparent) // invisible
+                    .clickable {
+                        val launchIntent =
+                            context.packageManager.getLaunchIntentForPackage(packageName)
+                        if (launchIntent != null) {
+                            context.startActivity(launchIntent)
+                        }
+                    }
+            )
         }
     }
 }
+
+
 
 fun getInstalledApps(pm: PackageManager): List<InstalledApp> {
     val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
