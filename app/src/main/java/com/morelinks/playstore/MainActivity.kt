@@ -1,5 +1,6 @@
 package com.morelinks.playstore
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -49,6 +51,10 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "landing") {
                     composable("landing") { PlayStoreLanding(navController) }
                     composable("secondpage") { SecondPage(navController) }
+                    composable("thirdpage/{packageName}") { backStackEntry ->
+                        val packageName = backStackEntry.arguments?.getString("packageName") ?: ""
+                        ThirdPage(navController, packageName)
+                    }
                 }
             }
         }
@@ -78,7 +84,7 @@ fun PlayStoreLanding(navController: NavHostController) {
                 contentDescription = "Search",
                 tint = Color.Transparent, // fully invisible
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(70.dp)
                     .clickable { navController.navigate("secondpage") }
             )
         }
@@ -90,8 +96,11 @@ fun SecondPage(navController: NavHostController) {
     val context = LocalContext.current
     var query by remember { mutableStateOf("") }
     val allApps = remember { getInstalledApps(context.packageManager) }
-    val filteredApps = allApps.filter {
-        it.name.contains(query, ignoreCase = true)
+
+    // ✅ Only match the app "FirstMobile"
+    val filteredApp = allApps.firstOrNull {
+        it.name.contains("FirstMobile", ignoreCase = true) &&
+                it.name.contains(query, ignoreCase = true)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -108,8 +117,8 @@ fun SecondPage(navController: NavHostController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(55.dp)
-                    .padding(top = 17.dp, start = 10.dp, end = 10.dp),
+                    .height(70.dp)
+                    .padding(top = 35.dp, start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Left search icon (invisible but clickable)
@@ -126,61 +135,44 @@ fun SecondPage(navController: NavHostController) {
                 BasicTextField(
                     value = query,
                     onValueChange = { query = it },
-                    textStyle = TextStyle(fontSize = 20.sp, color = Color.Black), // larger text
+                    textStyle = TextStyle(fontSize = 27.sp, color = Color.Black),
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth(0.65f) // 65% width
-                        .height(45.dp)       // fixed height
+                    modifier = Modifier
+                        .fillMaxWidth(0.65f) // 65% width
                         .background(
-                            Color(0xFFF1F3F4), // Play Store-like background
-                            shape = RoundedCornerShape(15.dp)
+                            Color(0xFFF1F3F4), // Play Store-like gray background
+                            shape = RoundedCornerShape(20.dp)
                         )
-                        .padding(horizontal = 10.dp), // even padding inside
-                    decorationBox = { innerTextField ->
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.CenterStart // text vertically centered
-                        ) {
-                            innerTextField()
-                        }
-                    }
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
                 )
-
             }
 
-            // Show multiple results (with real icons)
-            if (query.isNotEmpty() && filteredApps.isNotEmpty()) {
-                Column {
-                    filteredApps.forEach { app ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    val launchIntent =
-                                        context.packageManager.getLaunchIntentForPackage(app.packageName)
-                                    if (launchIntent != null) {
-                                        context.startActivity(launchIntent)
-                                    }
-                                }
-                                .background(Color.White.copy(alpha = 0.8f))
-                                .padding(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // App icon from PackageManager
-                            AndroidView(
-                                factory = { ctx ->
-                                    android.widget.ImageView(ctx).apply {
-                                        setImageDrawable(app.icon)
-                                    }
-                                },
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .padding(end = 12.dp)
-                            )
-
-                            // App name
-                            Text(app.name, fontSize = 20.sp, color = Color.Black)
+            // ✅ Show ONLY the first matching result
+            if (query.isNotEmpty() && filteredApp != null) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate("thirdpage/${filteredApp.packageName}")
                         }
-                    }
+                        .background(Color.White.copy(alpha = 0.8f))
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // App icon
+                    AndroidView(
+                        factory = { ctx ->
+                            android.widget.ImageView(ctx).apply {
+                                setImageDrawable(filteredApp.icon)
+                            }
+                        },
+                        modifier = Modifier
+                            .size(48.dp)
+                            .padding(end = 12.dp)
+                    )
+
+                    // App name
+                    Text(filteredApp.name, fontSize = 20.sp, color = Color.Black)
                 }
             }
         }
@@ -200,6 +192,39 @@ fun SecondPage(navController: NavHostController) {
                     .size(70.dp)
                     .clickable { navController.navigate("landing") }
             )
+        }
+    }
+}
+
+@Composable
+fun ThirdPage(navController: NavHostController, packageName: String) {
+    val context = LocalContext.current
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Background placeholder image
+        Image(
+            painter = painterResource(id = R.drawable.thirdimage), // Add your placeholder in res/drawable
+            contentDescription = "App Detail Page",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // Open button at top right
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 40.dp, end = 20.dp),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            Button(onClick = {
+                val launchIntent =
+                    context.packageManager.getLaunchIntentForPackage(packageName)
+                if (launchIntent != null) {
+                    context.startActivity(launchIntent)
+                }
+            }) {
+                Text("Open")
+            }
         }
     }
 }
