@@ -1,9 +1,9 @@
 package com.morelinks.playstore
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -13,10 +13,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,13 +47,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PlayStoreTheme {
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "landing") {
-                    composable("landing") { PlayStoreLanding(navController) }
-                    composable("secondpage") { SecondPage(navController) }
-                    composable("thirdpage/{packageName}") { backStackEntry ->
-                        val packageName = backStackEntry.arguments?.getString("packageName") ?: ""
-                        ThirdPage(navController, packageName)
+                Surface(
+                    modifier = Modifier.fillMaxSize().padding(bottom = 25.dp),
+                    color = Color(0xFF808080) // Darker grayish background
+                ) {
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "landing") {
+                        composable("landing") { PlayStoreLanding(navController) }
+                        composable("secondpage") { SecondPage(navController) }
+                        composable("thirdpage/{packageName}") { backStackEntry ->
+                            val packageName =
+                                backStackEntry.arguments?.getString("packageName") ?: ""
+                            ThirdPage(navController, packageName)
+                        }
                     }
                 }
             }
@@ -63,7 +69,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun PlayStoreLanding(navController: NavHostController) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(top = 25.dp)) {
         // Background image
         Image(
             painter = painterResource(id = R.drawable.playstore_bg),
@@ -76,7 +82,7 @@ fun PlayStoreLanding(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 40.dp, end = 20.dp),
+                .padding(bottom = 35.dp, end = 130.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
             Icon(
@@ -84,7 +90,7 @@ fun PlayStoreLanding(navController: NavHostController) {
                 contentDescription = "Search",
                 tint = Color.Transparent, // fully invisible
                 modifier = Modifier
-                    .size(70.dp)
+                    .size(50.dp)
                     .clickable { navController.navigate("secondpage") }
             )
         }
@@ -108,7 +114,9 @@ fun SecondPage(navController: NavHostController) {
         Image(
             painter = painterResource(id = R.drawable.secondimage),
             contentDescription = "Search Page",
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 25.dp),
             contentScale = ContentScale.Crop
         )
 
@@ -117,8 +125,8 @@ fun SecondPage(navController: NavHostController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(70.dp)
-                    .padding(top = 27.dp, start = 10.dp, end = 10.dp),
+                    .height(90.dp)
+                    .padding(top = 33.dp, start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Left search icon (invisible but clickable)
@@ -126,7 +134,7 @@ fun SecondPage(navController: NavHostController) {
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
                     tint = Color.Transparent,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(50.dp)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -141,9 +149,9 @@ fun SecondPage(navController: NavHostController) {
                         .fillMaxWidth(0.65f) // 65% width
                         .background(
                             Color(0xFFF1F3F4), // Play Store-like gray background
-                            shape = RoundedCornerShape(20.dp)
+                            shape = RoundedCornerShape(40.dp)
                         )
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                        .padding(horizontal = 16.dp, vertical = 5.dp)
                 )
             }
 
@@ -162,9 +170,10 @@ fun SecondPage(navController: NavHostController) {
                     // App icon
                     AndroidView(
                         factory = { ctx ->
-                            android.widget.ImageView(ctx).apply {
-                                setImageDrawable(filteredApp.icon)
-                            }
+                            android.widget.ImageView(ctx)
+                        },
+                        update = { imageView ->
+                            imageView.setImageDrawable(filteredApp.icon)
                         },
                         modifier = Modifier
                             .size(48.dp)
@@ -181,15 +190,15 @@ fun SecondPage(navController: NavHostController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 30.dp),
+                .padding(bottom = 30.dp, end = 110.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back to Landing",
                 tint = Color.Transparent, // invisible
                 modifier = Modifier
-                    .size(70.dp)
+                    .size(50.dp)
                     .clickable { navController.navigate("landing") }
             )
         }
@@ -205,7 +214,9 @@ fun ThirdPage(navController: NavHostController, packageName: String) {
         Image(
             painter = painterResource(id = R.drawable.thirdimage), // Add your placeholder in res/drawable
             contentDescription = "App Detail Page",
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 25.dp),
             contentScale = ContentScale.Crop
         )
 
@@ -219,13 +230,15 @@ fun ThirdPage(navController: NavHostController, packageName: String) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.4f)  // 40% width
-                    .height(50.dp)       // give it some tap area height
+                    .height(48.dp)       // give it some tap area height
                     .background(Color.Transparent) // invisible
                     .clickable {
                         val launchIntent =
                             context.packageManager.getLaunchIntentForPackage(packageName)
                         if (launchIntent != null) {
                             context.startActivity(launchIntent)
+                        } else {
+                            Toast.makeText(context, "App not found", Toast.LENGTH_SHORT).show()
                         }
                     }
             )
@@ -234,9 +247,8 @@ fun ThirdPage(navController: NavHostController, packageName: String) {
 }
 
 
-
 fun getInstalledApps(pm: PackageManager): List<InstalledApp> {
-    val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+    val packages = pm.getInstalledApplications(0)
     return packages
         .map { app ->
             InstalledApp(
